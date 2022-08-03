@@ -2,7 +2,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs/promises');
 const generateToken = require('./crypto');
-const { validateEmail, validatePassword } = require('./validations');
+const { validateEmail, validatePassword } = require('./Middlewares/Loginvalidations');
+const { validateAge } = require('./Middlewares/validateAge');
+const { validateName } = require('./Middlewares/validateName');
+const { validadeTalk, validateWatchedAt, validateRate } = require('./Middlewares/validateTalk');
+const { validateToken } = require('./Middlewares/validateToken');
 
 const app = express();
 app.use(bodyParser.json());
@@ -45,3 +49,37 @@ app.get('/talker/:id', async (req, res) => {
 });
 
 app.post('/login', validateEmail, validatePassword, generateToken);
+
+app.post('/talker', validateToken, validateName, validateAge, validadeTalk, validateWatchedAt, 
+validateRate, async (req, res) => {
+  const getTalkers = JSON.parse(await fs.readFile(talkers));
+  const newTalker = { ...req.body, id: getTalkers.length + 1 };
+  const addTalker = [...getTalkers, newTalker];
+
+  fs.writeFile(talkers, JSON.stringify(addTalker));
+
+  res.status(201)
+  .send(newTalker);
+});
+
+app.put('/talker/:id', validateToken, validateName, validateAge, validadeTalk, validateWatchedAt, 
+validateRate, async (req, res) => {
+  const { id } = req.params;
+  const { name, age, talk: { watchedAt, rate } } = req.body;
+
+  const getTalkers = JSON.parse(await fs.readFile(talkers));
+
+  const talkerEdited = { name, age, talk: { watchedAt, rate }, id: Number(id) };
+
+  const setEditedTalker = getTalkers.map((talker) => {
+    if (talker.id === Number(id)) {
+      return talkerEdited;
+    }
+    return talker;
+  });
+
+  fs.writeFile(talkers, JSON.stringify(setEditedTalker));
+
+  res.status(200)
+  .send(talkerEdited);
+});
