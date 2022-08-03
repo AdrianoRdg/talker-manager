@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs/promises');
 const generateToken = require('./crypto');
+const { validateEmail, validatePassword } = require('./validations');
 
 const app = express();
 app.use(bodyParser.json());
@@ -43,12 +44,4 @@ app.get('/talker/:id', async (req, res) => {
   return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
 });
 
-app.post('/login', (req, res) => {
-  const { email, password } = req.body;
-  if (email && password) {
-    const token = generateToken();
-    return res.status(200).json({ token });
-  }
-  
-  return res.status(404).json({ message: 'digite email ou senha validos' });
-});
+app.post('/login', validateEmail, validatePassword, generateToken);
