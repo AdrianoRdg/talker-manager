@@ -25,6 +25,19 @@ app.listen(PORT, () => {
 
 const talkers = 'talker.json';
 
+app.get('/talker/search', validateToken, async (req, res) => {
+  const { q } = req.query;
+  const getTalkers = JSON.parse(await fs.readFile(talkers));
+  
+  if (!q) return res.status(200).send(getTalkers);
+
+  const searchTalker = getTalkers.filter((talker) => talker.name.includes(q));
+
+  if (!searchTalker) return res.status(200).send([]);
+
+  res.status(200).send(searchTalker);
+});
+
 app.get('/talker', async (_req, res) => {
   const verifyContent = await fs.readFile(talkers);
   const parseContent = await JSON.parse(verifyContent);
