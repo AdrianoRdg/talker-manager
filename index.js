@@ -83,3 +83,14 @@ validateRate, async (req, res) => {
   res.status(200)
   .send(talkerEdited);
 });
+
+app.delete('/talker/:id', validateToken, async (req, res) => {
+  const { id } = req.params;
+  const getTalkers = JSON.parse(await fs.readFile(talkers));
+
+  const deleteTalker = getTalkers.filter((talker) => talker.id !== Number(id));
+
+  fs.writeFile(talkers, JSON.stringify(deleteTalker));
+  console.log(deleteTalker);
+  res.status(204).json(deleteTalker);
+});
