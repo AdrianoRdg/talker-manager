@@ -77,7 +77,7 @@ async function deleteTalker(req, res) {
   const deletingTalker = getTalkers.filter((talker) => talker.id !== Number(id));
 
   fs.writeFile(talkers, JSON.stringify(deletingTalker));
-  console.log(deletingTalker);
+ 
   res.status(204).json(deletingTalker);
 }
 
