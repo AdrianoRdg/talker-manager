@@ -6,13 +6,13 @@ async function getTalkersByQuery(req, res) {
   const { q } = req.query;
   const getTalkers = JSON.parse(await fs.readFile(talkers));
   
-  if (!q) return res.status(200).send(getTalkers);
+  if (!q) return res.status(200).json(getTalkers);
 
   const searchTalker = getTalkers.filter((talker) => talker.name.includes(q));
 
-  if (!searchTalker) return res.status(200).send([]);
+  if (!searchTalker) return res.status(200).json([]);
 
-  res.status(200).send(searchTalker);
+  res.status(200).json(searchTalker);
 }
 
 async function getAllTalkers(_req, res) {
@@ -20,10 +20,10 @@ async function getAllTalkers(_req, res) {
   const parseContent = await JSON.parse(verifyContent);
 
   if (parseContent.length > 0) {
-    return res.status(200).send(parseContent);
+    return res.status(200).json(parseContent);
   }
 
-  return res.status(200).send([]);
+  return res.status(200).json([]);
 }
 
 async function getTalkerById(req, res) {
@@ -33,7 +33,7 @@ async function getTalkerById(req, res) {
   const findTalkerById = getTalkers
     .find((talker) => talker.id === Number(id));
 
-  if (findTalkerById) return res.status(200).send(findTalkerById);
+  if (findTalkerById) return res.status(200).json(findTalkerById);
 
   return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
 }
@@ -45,8 +45,7 @@ async function addTalker(req, res) {
 
   fs.writeFile(talkers, JSON.stringify(addingTalker));
 
-  res.status(201)
-  .send(newTalker);
+  return res.status(201).json(newTalker);
 }
 
 async function updateTalker(req, res) {
@@ -66,19 +65,19 @@ async function updateTalker(req, res) {
 
   fs.writeFile(talkers, JSON.stringify(setEditedTalker));
 
-  res.status(200)
-  .send(talkerEdited);
+  return res.status(200).json(talkerEdited);
 }
 
 async function deleteTalker(req, res) {
   const { id } = req.params;
   const getTalkers = JSON.parse(await fs.readFile(talkers));
 
-  const deletingTalker = getTalkers.filter((talker) => talker.id !== Number(id));
+  const deletingTalker = getTalkers
+  .filter((talker) => talker.id !== Number(id));
 
   fs.writeFile(talkers, JSON.stringify(deletingTalker));
  
-  res.status(204).json(deletingTalker);
+  return res.status(204).json(deletingTalker);
 }
 
 module.exports = { 

@@ -32,10 +32,10 @@ app.get('/talker/:id', getTalkerById);
 
 app.post('/login', validateEmail, validatePassword, generateToken);
 
-app.post('/talker', validateToken, validateName, validateAge, validadeTalk, validateWatchedAt, 
-validateRate, addTalker);
+app.post('/talker', validateToken, validateName, validateAge, validadeTalk, 
+validateWatchedAt, validateRate, addTalker);
 
-app.put('/talker/:id', validateToken, validateName, validateAge, validadeTalk, validateWatchedAt, 
-validateRate, updateTalker);
+app.put('/talker/:id', validateToken, validateName, validateAge, validadeTalk, 
+validateWatchedAt, validateRate, updateTalker);
 
 app.delete('/talker/:id', validateToken, deleteTalker);
